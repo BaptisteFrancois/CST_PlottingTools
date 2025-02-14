@@ -61,12 +61,4 @@ def CenteredColorMap(cmap, vmin, vcenter, vmax, start=0, stop=1.0, name='centere
 
     newcmap = mcolors.LinearSegmentedColormap(name, cdict)
     
-    # We only need to reset the cmap if it already existis, for instance if this function is called
-    # multiple times in the same script with different values of 'vmin', 'vcenter' and 'vmax'. 
-    try:
-        plt.register_cmap(name=name, cmap=newcmap)
-    except:
-        plt.colormaps().remove(name)
-        plt.register_cmap(name=name, cmap=newcmap)
-
     return newcmap
