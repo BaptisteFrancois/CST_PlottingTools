@@ -19,5 +19,6 @@ setup(
         'matplotlib',
         'pandas',
         'seaborn',
-    ]
+    ],
+    keywords=['python', 'Climate Stress Test', 'CST', 'plotting', 'visualization'],
 )

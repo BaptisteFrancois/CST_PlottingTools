@@ -11,32 +11,55 @@ def TwoVarLineplot(
         show=False):
 
     """ Create line plots for two-dimensional arrays
-        - array: numpy array. The array to be plotted. The dimensions must be (x_axis, z_dim)
-        - x_axis: list or one-dimensional numpy array. List of the xticks to be plotted
-        - z_dim: list or one-dimensional numpy array. List of the 'array' indices on the y-axis to be plotted
-        - title: str. Title of the plot. Default is an empty string.
-        - ylabel: str. Label of the y-axis. Default is an empty string.
-        - xlabel: str. Label of the x-axis. Default is an empty string.
-        - caption_labels: str or None. Label of the captions. This is the label of the lines in the 
-                          plot that represent the z_dim. If None, no label is plotted
-        - colors: str or list. List of colors to be used in the plot. If a str, the same color will 
-                  be applied to all lines. Default value is 'k' (black).
-        - threshold: float. Value to be plotted as a horizontal line. Default is None, which results
-                     in no horizontal line being plotted
-        - color_threshold: str. Color of the threshold line. Default is 'red'
-        - label_threshold: str. Label of the threshold line. Default is 'Target'
-        - linewidth: int. Width of the lines. Default is 2
-        - figsize: tuple. Size of the figure. Default is (12, 6).
-        - title_fontsize: int. Fontsize of the title. Default is 14.
-        - label_fontsize: int. Fontsize of the labels. Default is 12.
-        - grid: bool. If True, the grid is plotted. Default is True
-        - facecolor: str. Background color of the plot. Default is 'whitesmoke'
-        - legend_facecolor: str. Background color of the legend. Default is 'whitesmoke'
-        - subplot_adjust: tuple. Adjust the subplot (top, right, bottom, left).
-                          Default is (None, None, 0.18, None) 
-        - savepath: str. Path to save the plot. Default is None, which would result in the plot 
-                    being displayed but not saved
-        - show: bool. If True, the plot is displayed. Default is True
+
+        Parameters
+        ----------
+
+        - array: array
+            The array to be plotted. The dimensions must be (x_axis, z_dim)
+        - x_axis: list or 1D array 
+            List of the x_ticks to be plotted
+        - z_dim: list or 1D array 
+            List of the 'array' indices on the y-axis to be plotted
+        - title: str (Optional)
+            Title of the plot. Default is an empty string.
+        - ylabel: str (Optional)
+            Label of the y-axis. Default is an empty string.
+        - xlabel: str (Optional)
+            Label of the x-axis. Default is an empty string.
+        - caption_labels: str (Optional)
+            Label of the captions. This is the label of the lines in the plot that represent 
+            the z_dim.
+        - colors: str or list (Optional, default is 'k')
+            List of colors to be used in the plot. If a str, the same color will be applied to all
+            lines. 
+        - threshold: float (Optional)
+            Value to be plotted as a horizontal line. Default is None, which results in no horizontal
+            line being plotted
+        - color_threshold: str (Optional, only used if threshold is not None)
+            Color of the threshold line. Default is 'red'
+        - label_threshold: str (Optional, only used if threshold is not None, default is 'Target')
+            Label of the threshold line.
+        - linewidth: int (Optional, default is 2)
+            Width of the lines
+        - figsize: tuple (Optional, default is (8, 5))
+            Size of the figure.
+        - title_fontsize: int (Optional, default is 14)
+            Fontsize of the title. 
+        - label_fontsize: int (Optional, default is 12)
+            Fontsize of the labels
+        - grid: bool (Optional, default is True)
+            If True, the grid is plotted. 
+        - facecolor: str (Optional, default is 'whitesmoke')
+            Background color of the plot.
+        - legend_facecolor: str (OPtional, default is 'whitesmoke')
+            Background color of the legend. 
+        - subplot_adjust: tuple (Optional, default is (None, None, 0.18, None))
+            Adjust the subplot (top, right, bottom, left)
+        - savepath: str (Optional, default is None)
+            Path to save the plot. If None, the figure is not saved
+        - show: bool (Optional, default is False)
+            If True, the plot is displayed
     """
 
     try:
@@ -97,3 +120,30 @@ def TwoVarLineplot(
     if savepath:
         fig.savefig(savepath)
     plt.close()
+
+    return fig, ax
+
+if __name__ == "__main__":
+    import numpy as np
+    import pandas as pd
+    import seaborn as sns
+
+    # Create a random dataset
+    np.random.seed(0)
+    x = np.linspace(0, 10, 100)
+    y = np.random.rand(100, 5)
+    y = np.cumsum(y, axis=0)
+    y = y - y.mean(axis=0)
+
+    # Create a random caption
+    caption_labels = ['A', 'B', 'C', 'D', 'E']
+
+    # Create a random threshold
+    threshold = 0
+
+    # Create a random color
+    colors = sns.color_palette('husl', 5)
+
+    TwoVarLineplot(y, x, z_dim=[0, 1, 2, 3, 4], title='Random data', ylabel='Y-axis', xlabel='X-axis',
+                   caption_labels=caption_labels, threshold=threshold, colors=colors, 
+                   savepath='../figures/TwoVarLineplot.png', show=True)
