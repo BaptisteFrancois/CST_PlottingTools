@@ -147,9 +147,14 @@ def Heatmap(data, x_labels, y_labels, title='', xlabel='', ylabel='', cmap='cool
         
         if contour_unit:
             # Add the unit to the contour labels
-            contour_labels = [str(level)+' '+contour_unit for level in contour_levels]         
+            contour_labels = [str(level)+' '+contour_unit for level in contour_levels]
         else:
             contour_labels = [str(level) for level in contour_levels]
+
+        if relative_contours:    
+            # Add a '+' sign to positive values
+            contour_labels = \
+                ['+'+str(level) if not str(level).startswith('-') else str(level) for level in contour_labels]
         
         fmt = {}
         for l, s in zip(cp.levels, contour_labels):
