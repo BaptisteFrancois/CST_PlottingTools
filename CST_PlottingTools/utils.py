@@ -42,8 +42,7 @@ def CenteredColorMap(cmap, vmin, vcenter, vmax, start=0, stop=1.0, name='centere
     reg_index = np.linspace(start, stop, 257)
 
     # Calculate the index for the midpoint
-    midpoint = 1 - (vmax - vcenter) / (vmax - vmin)
-    
+    midpoint = np.diff([vmin, vcenter])[0] / np.diff([vmin, vmax])[0]
 
     # shifted index to match the data
     shift_index = np.hstack([
@@ -51,14 +50,16 @@ def CenteredColorMap(cmap, vmin, vcenter, vmax, start=0, stop=1.0, name='centere
         np.linspace(midpoint, 1.0, 129, endpoint=True)
     ])
 
+    
     for ri, si in zip(reg_index, shift_index):
         r, g, b, a = cmap(ri)
-
+        
         cdict['red'].append((si, r, r))
         cdict['green'].append((si, g, g))
         cdict['blue'].append((si, b, b))
         cdict['alpha'].append((si, a, a))
 
     newcmap = mcolors.LinearSegmentedColormap(name, cdict)
+
     
     return newcmap

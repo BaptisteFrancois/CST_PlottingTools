@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 def Heatmap(data, x_labels, y_labels, title='', xlabel='', ylabel='', cmap='coolwarm', colorbar_label='',
             vmin=None, vmax=None, vcenter=None, alpha=1, grid=False, fontsize_labels=13, 
             fontsize_ticklabels=12, fontsize_title=14, fontsize_cbar_label=13, figsize=(6,6), 
-            savepath=None, show=False):
+            savepath=None, no_change=None, show=False):
         
     """ Create a heatmap plot of the data.
 
@@ -54,6 +54,8 @@ def Heatmap(data, x_labels, y_labels, title='', xlabel='', ylabel='', cmap='cool
         The size of the figure.
     savepath : str
         The path to save the figure.
+    no_change : tuple (Optional)
+        Coordinates of the 'no change' scenario.
     show : bool
         Whether to show the plot.
     """
@@ -80,7 +82,6 @@ def Heatmap(data, x_labels, y_labels, title='', xlabel='', ylabel='', cmap='cool
     # Not centered colormap requested   
     else:
         cmap = cmaps.get(cmap)
-        norm = None
 
     # Calculate the extent of the grid
     grid_x_resolution = np.diff(x_labels)[0]
@@ -119,6 +120,10 @@ def Heatmap(data, x_labels, y_labels, title='', xlabel='', ylabel='', cmap='cool
                  xmin=np.full(len(y_labels), min(x_labels))-grid_x_resolution/2,
                  xmax=np.full(len(y_labels), max(x_labels))+grid_x_resolution/2,
                  color="lightgrey", linewidth=0.3)
+        
+    # Add a star symbol to the 'no change' scenario
+    if no_change:
+        ax.scatter(no_change[0], no_change[1], marker='*', s=100, color='yellow', edgecolors='black')
     
     fig.tight_layout()
 
