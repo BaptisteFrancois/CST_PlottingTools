@@ -9,7 +9,8 @@ import matplotlib.pyplot as plt
 def Heatmap(data, x_labels, y_labels, title='', xlabel='', ylabel='', cmap='coolwarm', colorbar_label='',
             vmin=None, vmax=None, vcenter=None, alpha=1, grid=False, fontsize_labels=13, 
             fontsize_ticklabels=12, fontsize_title=14, fontsize_cbar_label=13, figsize=(6,6), 
-            savepath=None, no_change=None, show=False):
+            savepath=None, no_change=None, size_no_change_marker=200, contour_levels=None, 
+            relative_contours=False, contour_unit=None, contour_linewidth=1, show=False):
         
     """ Create a heatmap plot of the data.
 
@@ -54,8 +55,20 @@ def Heatmap(data, x_labels, y_labels, title='', xlabel='', ylabel='', cmap='cool
         The size of the figure.
     savepath : str
         The path to save the figure.
-    no_change : tuple (Optional)
+    no_change : tuple (Optional, default value is None)
         Coordinates of the 'no change' scenario.
+    size_no_change_marker : int (Optional, default value is 200)
+        Size of the marker for the 'no change' scenario.
+    contour_levels : list (Optional, default value is None)
+        List of levels to be plotted as contours. If relative_contours is True, the levels are
+        relative to the data and must be expressed in percentage of the 'vcenter' value.
+        For example, [-5, 0, 5] will plot contours at -5%, 0% and 5% of the 'vcenter' value.
+    relative_contours : bool (Optional, default value is False)
+        Whether the contours are relative to the data.
+    contour_unit : str (Optional, default value is None)
+        Unit of the contours.
+    contour_linewidth : float (Optional, default value is 1)
+        Width of the contour lines.
     show : bool
         Whether to show the plot.
     """
@@ -121,10 +134,33 @@ def Heatmap(data, x_labels, y_labels, title='', xlabel='', ylabel='', cmap='cool
                  xmax=np.full(len(y_labels), max(x_labels))+grid_x_resolution/2,
                  color="lightgrey", linewidth=0.3)
         
+    # Add contours
+    if contour_levels is not None:
+        if relative_contours:
+            if not vcenter:
+                raise ValueError('The colormap must be centered to plot relative contours.')
+            levels = [vcenter + vcenter*level/100 for level in contour_levels]
+        else:
+            levels = contour_levels
+        cp = ax.contour(x_labels, y_labels, data, levels=levels, colors='black',
+                        linewidths=contour_linewidth)
+        
+        if contour_unit:
+            # Add the unit to the contour labels
+            contour_labels = [str(level)+' '+contour_unit for level in contour_levels]         
+        else:
+            contour_labels = [str(level) for level in contour_levels]
+        
+        fmt = {}
+        for l, s in zip(cp.levels, contour_labels):
+            fmt[l] = s
+        ax.clabel(cp, cp.levels, inline=1, fontsize=fontsize_ticklabels, fmt=fmt)
+            
     # Add a star symbol to the 'no change' scenario
     if no_change:
-        ax.scatter(no_change[0], no_change[1], marker='*', s=100, color='yellow', edgecolors='black')
-    
+        ax.scatter(no_change[0], no_change[1], marker='*', s=size_no_change_marker, color='yellow', 
+                   edgecolors='black', zorder=10)
+
     fig.tight_layout()
 
     if savepath:
