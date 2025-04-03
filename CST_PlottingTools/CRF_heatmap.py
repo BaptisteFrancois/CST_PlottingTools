@@ -14,7 +14,7 @@ def Heatmap(data, x_labels, y_labels, title='', xlabel='', ylabel='', cmap='cool
             relative_contours=False, contour_unit=None, contour_linewidth=1, show=False,
             with_gcm_distribution_on_the_side=True, path_deltaT=None, path_deltaP=None,
             sheet_deltaT=None, sheet_deltaP=None, bin_widthT=None, bin_widthP=None, color_gcm=None, 
-            color_map_gcm=None):
+            color_map_gcm=None, gcm_overlay_heatmap=False):
         
     """ Create a heatmap plot of the data.
 
@@ -134,6 +134,9 @@ def Heatmap(data, x_labels, y_labels, title='', xlabel='', ylabel='', cmap='cool
 
         - color_map_gcm: str (Optional, default is None)
             Colormap to be used for the GCM distribution. If None, the 'YlOrBr' colormap is used.
+
+        - gcm_overlay_heatmap: bool (Optional, default is False)
+            If True, the GCM projections are overlayed on the heatmap.
     """
     # Check that labels are regularly spaced
     if not np.all(np.diff(x_labels) == np.diff(x_labels)[0]):
@@ -241,7 +244,7 @@ def Heatmap(data, x_labels, y_labels, title='', xlabel='', ylabel='', cmap='cool
 
     elif with_gcm_distribution_on_the_side == True:
 
-        fig = plt.figure(figsize=figsize)
+        fig = plt.figure(figsize=figsize, constrained_layout=True)
         gs = fig.add_gridspec(nrows=2, ncols=3, width_ratios=[2, 16, 0.75], height_ratios=[16, 2])
 
         ax1 = fig.add_subplot(gs[0:-1, 1]) # Main scatter plot
@@ -345,8 +348,10 @@ def Heatmap(data, x_labels, y_labels, title='', xlabel='', ylabel='', cmap='cool
                 color_gcm_hist = plt.cm.YlOrBr(np.linspace(0, 1, len(deltaT.columns)))
 
         for k, period in enumerate(deltaT.columns):
-            #ax1.scatter(deltaP[period], deltaT[period], s=120, c=colors[k], edgecolors='k', label=period,
-            #        zorder=2)
+            
+            if gcm_overlay_heatmap:
+                ax1.scatter(deltaP[period], deltaT[period], s=120, c=color_gcm_hist[k], edgecolors='k', 
+                            label=period, zorder=2)
             ax2.hist(deltaP[period].values.flatten(), bins=bins_P, color=color_gcm_hist[k], edgecolor='k', 
                      alpha=alpha[k], label=period)
             ax3.hist(deltaT[period].values.flatten(), bins=bins_T, color=color_gcm_hist[k], edgecolor='k', 
@@ -362,7 +367,7 @@ def Heatmap(data, x_labels, y_labels, title='', xlabel='', ylabel='', cmap='cool
         ax3.set_ylabel(r'$\Delta T\ (C)$', fontsize=fontsize_labels)
         ax3.set_xlabel('Nb of GCMs', fontsize=11)    
 
-    fig.tight_layout()
+    #fig.tight_layout()
 
     if savepath:
         fig.savefig(savepath)
@@ -370,7 +375,10 @@ def Heatmap(data, x_labels, y_labels, title='', xlabel='', ylabel='', cmap='cool
         plt.show()
     plt.close()
 
-    return fig, ax1, ax2, ax3, cbar_ax
+    if with_gcm_distribution_on_the_side == False:
+        return fig, ax, cbar
+    else:
+        return fig, ax1, ax2, ax3, cbar_ax
 
 if __name__ == "__main__":
 
@@ -379,4 +387,20 @@ if __name__ == "__main__":
     y_labels = np.arange(10)
     Heatmap(data, x_labels, y_labels, title='Random data', xlabel='X-axis', ylabel='Y-axis', 
             cmap='coolwarm', colorbar_label='Colorbar label', savepath='../figures/heatmap.png',
-            show=True)
+            show=True, with_gcm_distribution_on_the_side=False)
+    
+    data = np.random.rand(9,10)
+    x_labels = np.arange(-40,41,10)
+    y_labels = np.arange(10)
+    Heatmap(data, 
+            x_labels,
+             y_labels, title='Random data', xlabel='X-axis', ylabel='Y-axis', 
+            cmap='coolwarm', colorbar_label='Colorbar label', savepath='../figures/heatmap_w_GCMs.png',
+            show=True, with_gcm_distribution_on_the_side=True, 
+            path_deltaT='../test/data/delta_tas.xlsx',
+            path_deltaP='../test/data/delta_prcp.xlsx',
+            sheet_deltaT='Delta T (C) -- ssp5_8_5', 
+            sheet_deltaP='Delta P (%) -- ssp5_8_5',
+            bin_widthT = 0.5,
+            bin_widthP = 2.5,
+            gcm_overlay_heatmap=True)
