@@ -238,7 +238,7 @@ def TwoVarLineplot(
             else:
                 color_gcm_hist = color_gcm
         else:
-            # Generate a list of colors from the 'YlGnBU' colormap. The list has the same length as the number of periods
+            # Generate a list of colors from the 'YlOrBr' colormap. The list has the same length as the number of periods
             if color_map_gcm is not None:
                 color_gcm_hist = \
                     plt.cm.get_cmap(color_map_gcm)(np.linspace(0, 1, len(delta_change.columns)))

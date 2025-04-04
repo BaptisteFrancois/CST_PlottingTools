@@ -152,7 +152,7 @@ def Heatmap(data, x_labels, y_labels, title='', xlabel='', ylabel='', cmap='cool
             figsize = (8, 8)
 
     # Get the colormap
-    if vcenter:
+    if vcenter is not None:
         # Get 'vmax' value
         if not vmax:
             vmax = math.ceil(data.max())
@@ -387,6 +387,7 @@ if __name__ == "__main__":
     y_labels = np.arange(10)
     Heatmap(data, x_labels, y_labels, title='Random data', xlabel='X-axis', ylabel='Y-axis', 
             cmap='coolwarm', colorbar_label='Colorbar label', savepath='../figures/heatmap.png',
+            alpha=1, grid=True, fontsize_labels=13,
             show=True, with_gcm_distribution_on_the_side=False)
     
     data = np.random.rand(9,10)
@@ -404,3 +405,13 @@ if __name__ == "__main__":
             bin_widthT = 0.5,
             bin_widthP = 2.5,
             gcm_overlay_heatmap=True)
+    
+    data = np.array(pd.read_csv('../test/data/example_CRF.csv', index_col='prcp'))
+    Heatmap(data.T, 
+            x_labels= np.arange(-30,31,5),
+            y_labels= np.arange(0,7,1),
+            vmin=data.min(), vmax=data.max(), vcenter=data[6,0],
+            title='Compact Flows Early Delta', xlabel='X-axis', ylabel='Y-axis', 
+            cmap='coolwarm', colorbar_label='Colorbar label',
+            show=True, with_gcm_distribution_on_the_side=False,
+            savepath='../figures/heatmap_colorbar_centered_on_selected_value.png')
